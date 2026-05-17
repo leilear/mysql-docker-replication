@@ -1,0 +1,77 @@
+services:
+
+  mysql-master:
+    image: mysql:8.0.36
+    container_name: mysql-master
+
+    ports:
+      - "3307:3306"
+
+    environment:
+      MYSQL_ROOT_PASSWORD: root123
+
+    command:
+      --server-id=1
+      --log-bin=mysql-bin
+      --binlog-format=ROW
+
+      --gtid-mode=ON
+      --enforce-gtid-consistency=ON
+      --log-replica-updates=ON
+
+      --plugin-load-add=semisync_replica.so
+      --plugin-load-add=semisync_source.so
+      --rpl_semi_sync_source_enabled=ON
+      --rpl-semi_sync_replica_enabled=OFF
+
+      --character-set-server=utf8mb4
+      --collation-server=utf8mb4_0900_ai_ci
+
+      
+    volumes:
+      - master-data:/var/lib/mysql
+
+    restart: unless-stopped
+
+
+  mysql-slave:
+    image: mysql:8.0.36
+    container_name: mysql-slave
+
+    ports:
+      - "3308:3306"
+
+    environment:
+      MYSQL_ROOT_PASSWORD: root123
+
+    command:
+      --server-id=2
+      --relay-log=relay-log
+
+      --log-bin=mysql-bin
+      --binlog-format=ROW
+
+      --gtid-mode=ON
+      --enforce-gtid-consistency=ON
+      --log-replica-updates=ON
+      
+      --plugin-load-add=semisync_source.so
+      --plugin-load-add=semisync_replica.so
+      --rpl_semi_sync_source_enabled=OFF
+      --rpl_semi_sync_replica_enabled=ON
+
+      --character-set-server=utf8mb4
+      --collation-server=utf8mb4_0900_ai_ci
+
+    volumes:
+      - slave-data:/var/lib/mysql
+
+    restart: unless-stopped
+
+    depends_on:
+      - mysql-master
+
+
+volumes:
+  master-data:
+  slave-data:
