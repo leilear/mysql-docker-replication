@@ -3,6 +3,23 @@ MySQL 8 GTID replication environment using Docker Compose
 
 # MySQL 8 Docker GTID Replication Lab
 
+````markdown
+```text
++-------------------+
+|   mysql-master    |
+|       :3306       |
++-------------------+
+          |
+          | GTID Replication
+          |
++-------------------+
+|   mysql-slave     |
+|       :3306       |
++-------------------+                                              
+```
+````
+
+
 # A production-style MySQL 8 replication environment using Docker Compose.
 
 Features:
@@ -11,18 +28,8 @@ Features:
 - Persistent volumes
 - Health check scripts
 - Automatic replication initialization
-- +-------------------+
-- |---mysql-master----|
-- |------:3306--------|
-- +-------------------+
-- ------|
-- ------| GTID Replication
-- ------|
-- +-------------------+
-- |---mysql-slave-----|
-- |------:3306--------|
-- +-------------------+
-  
+
+ 
 ## Persistent Volumes
 
 Data is stored in:
@@ -94,6 +101,8 @@ mysql> show replica status\G
                 Auto_Position: 1
 
 # 5 同步测试 主备库 数据
+````markdown
+```text
 mysql> select * from lei.t1;
 +------+
 | id   |
@@ -102,7 +111,8 @@ mysql> select * from lei.t1;
 |    2 |
 +------+
 2 rows in set (0.05 sec)
-
+```
+````
 # 6 故障切换 Failover Test
 
 1. Stop master
